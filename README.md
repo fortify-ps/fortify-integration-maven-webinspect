@@ -38,20 +38,36 @@ The plugin provides Maven goals for creating and deleting WebInspect stand-alone
 and saving the recorded traffic in various formats. Recorded traffic can either be downloaded to
 the system where Maven is running, or saved on the WebInspect host for later use.
 
-* Create a proxy with the specified instance id, port and address. If any of these values are
-  not specified, they will be generated.
-** ```mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" -Dcom.fortify.webinspect.proxy.instanceId=[instanceId] -Dcom.fortify.webinspect.proxy.port=[port] -Dcom.fortify.webinspect.proxy.host=[listen address] com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiCreateProxy```
+**Create a proxy**
 
-* Save proxy traffic on the WebInspect host. Allowed extensions are tsf (native WebInspect proxy format),
-  xml (scan settings) or webmacro (workflow or login macro)
-** ```mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" -Dcom.fortify.webinspect.proxy.instanceId=[instanceId] -Dcom.fortify.webinspect.proxy.extension=[extension] com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiSaveProxyTrafficOnServer```
+Create a proxy with the given instance id, port and address. If any of these values are not specified, 
+they will be generated.
 
-* Save proxy traffic on the local system. Allowed extensions are tsf (native WebInspect proxy format),
-  xml (scan settings) or webmacro (workflow or login macro)
-** ```mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" -Dcom.fortify.webinspect.proxy.instanceId=[instanceId] -Dcom.fortify.webinspect.proxy.extension=[extension] -Dcom.fortify.webinspect.proxy.outputFile=[filename] com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiSaveProxyTraffic```
+``mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" -Dcom.fortify.webinspect.proxy.instanceId=[instanceId] -Dcom.fortify.webinspect.proxy.port=[port] -Dcom.fortify.webinspect.proxy.host=[listen address] com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiCreateProxy``
 
-* Delete a proxy. Instance id is handled in the same as as described above.
-** ```mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiDeleteProxy```
+This goal will output the specified or generated instance id, port and address on the Maven console for later use.
+In addition, this goal will set the following project properties for use by other goals:
+* com.fortify.webinspect.proxy.instanceId
+* com.fortify.webinspect.proxy.port
+* com.fortify.webinspect.proxy.address
+
+**Save proxy traffic on WebInspect host**
+
+Save proxy traffic on the WebInspect host. Allowed extensions are tsf (native WebInspect proxy format),
+xml (scan settings) or webmacro (workflow or login macro).
+
+``mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" -Dcom.fortify.webinspect.proxy.instanceId=[instanceId] -Dcom.fortify.webinspect.proxy.extension=[extension] com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiSaveProxyTrafficOnServer``
+
+**Save proxy traffic on the local system** 
+
+Save proxy traffic on the local system. Allowed extensions are tsf (native WebInspect proxy format),
+xml (scan settings) or webmacro (workflow or login macro).
+
+``mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" -Dcom.fortify.webinspect.proxy.instanceId=[instanceId] -Dcom.fortify.webinspect.proxy.extension=[extension] -Dcom.fortify.webinspect.proxy.outputFile=[filename] com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiSaveProxyTraffic``
+
+**Delete a proxy**
+
+``mvn -Dcom.fortify.webinspect.connection="http://[WIHost]:[port]/webinspect;[optionalExtraProperties]" com.fortify.maven.plugin:webinspect-maven-plugin:17.10.0-SNAPSHOT:wiDeleteProxy``
 
 ## Creating WebInspect stand-alone scan
 TODO
