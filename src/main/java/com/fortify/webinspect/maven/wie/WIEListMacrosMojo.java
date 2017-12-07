@@ -39,7 +39,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 public class WIEListMacrosMojo extends AbstractWIEMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWIEConnection().api().macro().getMacros());
+		logResult(getWIEConnection().api().macro().queryMacros().build().getAll());
 	}
 
 }
