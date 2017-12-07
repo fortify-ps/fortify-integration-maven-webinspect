@@ -86,7 +86,7 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	 * ScopedPaths is specified, ScanScope must also be specified.
 	 * ("ScopedPaths":["/ancestor/path1/","/ancestor/path2/"])
 	 */
-	@Parameter
+	@Parameter(property = "com.fortify.webinspect.scan.scopedPaths")
 	private String[] scopedPaths;
 
 	/**
@@ -99,7 +99,7 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	 * LoginMacro - a webmacro file name. This file must exist in the WebInspect
 	 * scan settings folder on the WebInspect machine. ("LoginMacro":"mylogin")
 	 */
-	@Parameter
+	@Parameter(property = "com.fortify.webinspect.scan.loginMacro")
 	private String loginMacro;
 
 	/**
