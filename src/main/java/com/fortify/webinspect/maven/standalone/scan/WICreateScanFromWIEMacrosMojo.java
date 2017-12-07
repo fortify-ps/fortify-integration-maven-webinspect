@@ -22,11 +22,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.wi.maven.plugin.scan;
+package com.fortify.webinspect.maven.standalone.scan;
 
-import java.nio.file.CopyOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,36 +32,44 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.wi.maven.plugin.AbstractWIMojo;
+import com.fortify.api.webinspect.connection.WebInspectAuthenticatingRestConnection;
+import com.fortify.api.wie.connection.WIEAuthenticatingRestConnection;
+import com.fortify.webinspect.maven.WIEConnectionRetrieverMaven;
+import com.google.common.collect.Lists;
 
 /**
- * Mojo for saving a WebInspect scan to local disk
+ * Mojo for creating a WebInspect stand-alone scan and optionally running it
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiSaveScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WISaveScanMojo extends AbstractWIMojo {
-
-	// We specify default value as discussed here: https://stackoverflow.com/questions/4061386/maven-how-to-pass-parameters-between-mojos
-	@Parameter(property = "com.fortify.webinspect.scan.id", required = true, defaultValue="${com.fortify.webinspect.scan.id}")
-	private String scanId;
-	@Parameter(property = "com.fortify.webinspect.scan.extension", required = true, defaultValue = "settings")
-	private String extension;
-	@Parameter(property = "com.fortify.webinspect.scan.detailType", required = false)
-	private String detailType;
-	@Parameter(property = "com.fortify.webinspect.scan.outputFile", required = true)
-	private String outputFile;
-	@Parameter(property = "com.fortify.webinspect.scan.replaceExistingOutputFile", required = false, defaultValue = "true")
-	private boolean replaceExistingOutputFile;
-	
+@Mojo(name = "wiCreateScanFromWIEMacros", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WICreateScanFromWIEMacrosMojo extends WICreateScanMojo {
+	/**
+     * Root URL of the WebInspect Enterprise scan API instance to be used
+     */
+    @Parameter(property = "com.fortify.wie.connection", required = true)
+    private WIEConnectionRetrieverMaven connRetriever;
+    
+    protected WIEAuthenticatingRestConnection getWIEConnection() {
+    	return connRetriever.getConnection();
+    }
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		CopyOption[] copyOptions = new CopyOption[]{};
-		if ( replaceExistingOutputFile ) {
-			copyOptions = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
+		uploadMacrosFromWIEtoWebInspect();
+		super.execute();
+	}
+
+	private void uploadMacrosFromWIEtoWebInspect() {
+		WIEAuthenticatingRestConnection wie = getWIEConnection();
+		WebInspectAuthenticatingRestConnection wi = getWebInspectConnection();
+		List<String> macros = Lists.newArrayList(getWorkflowMacros());
+		macros.add(getLoginMacro());
+		for ( String macro : macros ) {
+			byte[] macroData = wie.api().macro().getMacroDataByName(macro);
+			wi.api().macro().uploadMacro(macro, macroData);
 		}
-		getWebInspectConnection().api().scanner().saveScan(scanId, extension, detailType, Paths.get(outputFile), copyOptions);
+		
 	}
 }

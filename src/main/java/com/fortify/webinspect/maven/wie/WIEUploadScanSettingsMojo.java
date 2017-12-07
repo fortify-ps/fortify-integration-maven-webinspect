@@ -22,7 +22,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.wi.maven.plugin.proxy;
+package com.fortify.webinspect.maven.wie;
+
+import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -31,53 +33,26 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import com.fortify.api.util.rest.json.JSONMap;
-import com.fortify.wi.maven.plugin.AbstractWIMojo;
-
-
 /**
- * Mojo for creating a WebInspect proxy. Proxy properties like instance id,
- * port and address will be saved as project properties for later use by other mojo's.
+ * Mojo for uploading scan settings to WebInspect Enterprise
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiCreateProxy", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WICreateProxyMojo extends AbstractWIMojo {
+@Mojo(name = "wieUploadScanSettings", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WIEUploadScanSettingsMojo extends AbstractWIEMojo {
 	@Parameter(defaultValue = "${project}", readonly = true)
 	private MavenProject project;
 	
-	/**
-	 * Represents the unique name of this proxy instance.
-	 * If not specified, WebInspect will automatically generate an
-	 * instance id when creating a new proxy instance. This
-	 * generated proxy instance id then needs to be specified
-	 * for the other proxy-related goals.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.instanceId", required = false)
-	protected String instanceId;
+	@Parameter(property = "com.fortify.wie.scan.settingsFile", required = true)
+	private File scanSettingsFile;
 	
-	/**
-	 * Port to listen on by the proxy server. If not specified, WebInspect
-	 * will use a random unused port.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.port", required = false)
-	private int proxyPort;
-
-	/**
-	 * Hostname or ip address where the proxy should bind on. If not specified,
-	 * the WebInspect proxy will bind on the default network interface address
-	 * (127.0.0.1).
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.address", required = false)
-	protected String proxyAddress;
-
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		JSONMap result = getWebInspectConnection().api().proxy().createProxy(instanceId, proxyAddress, proxyPort);
-		logResult(result);
-		project.getProperties().put("com.fortify.webinspect.proxy.instanceId", result.get("instanceId"));
-		project.getProperties().put("com.fortify.webinspect.proxy.port", result.get("port"));
-		project.getProperties().put("com.fortify.webinspect.proxy.address", result.get("address"));
+		String fileId = getWIEConnection().api().scan().uploadScanSettings(scanSettingsFile);
+		logResult(fileId);
+		// Make the file id available for other Mojo's that need to access the settings file
+		project.getProperties().put("com.fortify.wie.scan.settingsFileId", fileId);
 	}
+
 }

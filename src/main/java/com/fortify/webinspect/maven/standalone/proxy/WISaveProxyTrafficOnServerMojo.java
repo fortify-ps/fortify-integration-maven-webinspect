@@ -22,24 +22,47 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.wie.maven.plugin;
+package com.fortify.webinspect.maven.standalone.proxy;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
+import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
 
 /**
- * Mojo for uploading scan settings to WebInspect Enterprise
+ * Mojo for saving WebInspect proxy traffic to the WebInspect host
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wieListMacros", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WIEListMacrosMojo extends AbstractWIEMojo {
+@Mojo(name = "wiSaveProxyTrafficOnServer", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WISaveProxyTrafficOnServerMojo extends AbstractWIMojo {
+	private String action = "overwrite";
+	
+	/**
+	 * The instance id of the proxy, as specified or generated when creating the proxy instance,
+	 * for which the traffic needs to be saved. The file name will be based on the proxy
+	 * instance id. Note however that if the instance id contains dots, everything after the
+	 * last dot will be stripped from the file name. For example, an instance id 'a.b.c' will
+	 * be saved as 'a.b.[extension]'.
+	 */
+	@Parameter(property = "com.fortify.webinspect.proxy.instanceId", required = false)
+	protected String instanceId;
+
+	/**
+	 * Extension of savefile, choose between webmacro, tsf or xml.
+	 * Defaults to webmacro.
+	 */
+	@Parameter(property = "com.fortify.webinspect.proxy.traffic.extension", required = true, defaultValue = "webmacro")
+	private String extension;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWIEConnection().api().macro().getMacros());
+		logResult(getWebInspectConnection().api().proxy().saveProxyTrafficOnServer(instanceId, extension, action));
 	}
 
+	
 }

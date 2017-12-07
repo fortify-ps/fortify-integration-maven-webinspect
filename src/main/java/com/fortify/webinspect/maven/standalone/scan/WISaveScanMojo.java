@@ -22,7 +22,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.wi.maven.plugin.proxy;
+package com.fortify.webinspect.maven.standalone.scan;
+
+import java.nio.file.CopyOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -30,39 +34,36 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.wi.maven.plugin.AbstractWIMojo;
+import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
 
 /**
- * Mojo for saving WebInspect proxy traffic to the WebInspect host
+ * Mojo for saving a WebInspect scan to local disk
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiSaveProxyTrafficOnServer", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WISaveProxyTrafficOnServerMojo extends AbstractWIMojo {
-	private String action = "overwrite";
-	
-	/**
-	 * The instance id of the proxy, as specified or generated when creating the proxy instance,
-	 * for which the traffic needs to be saved. The file name will be based on the proxy
-	 * instance id. Note however that if the instance id contains dots, everything after the
-	 * last dot will be stripped from the file name. For example, an instance id 'a.b.c' will
-	 * be saved as 'a.b.[extension]'.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.instanceId", required = false)
-	protected String instanceId;
+@Mojo(name = "wiSaveScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WISaveScanMojo extends AbstractWIMojo {
 
-	/**
-	 * Extension of savefile, choose between webmacro, tsf or xml.
-	 * Defaults to webmacro.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.traffic.extension", required = true, defaultValue = "webmacro")
+	// We specify default value as discussed here: https://stackoverflow.com/questions/4061386/maven-how-to-pass-parameters-between-mojos
+	@Parameter(property = "com.fortify.webinspect.scan.id", required = true, defaultValue="${com.fortify.webinspect.scan.id}")
+	private String scanId;
+	@Parameter(property = "com.fortify.webinspect.scan.extension", required = true, defaultValue = "settings")
 	private String extension;
+	@Parameter(property = "com.fortify.webinspect.scan.detailType", required = false)
+	private String detailType;
+	@Parameter(property = "com.fortify.webinspect.scan.outputFile", required = true)
+	private String outputFile;
+	@Parameter(property = "com.fortify.webinspect.scan.replaceExistingOutputFile", required = false, defaultValue = "true")
+	private boolean replaceExistingOutputFile;
+	
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWebInspectConnection().api().proxy().saveProxyTrafficOnServer(instanceId, extension, action));
+		CopyOption[] copyOptions = new CopyOption[]{};
+		if ( replaceExistingOutputFile ) {
+			copyOptions = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
+		}
+		getWebInspectConnection().api().scan().saveScan(scanId, extension, detailType, Paths.get(outputFile), copyOptions);
 	}
-
-	
 }

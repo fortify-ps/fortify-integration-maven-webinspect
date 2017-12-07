@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.wi.maven.plugin.scan;
+package com.fortify.webinspect.maven.standalone.scan;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -32,7 +32,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import com.fortify.api.util.rest.json.JSONMap;
-import com.fortify.wi.maven.plugin.AbstractWIMojo;
+import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
 
 /**
  * Mojo for creating a WebInspect stand-alone scan and optionally running it
@@ -42,7 +42,9 @@ import com.fortify.wi.maven.plugin.AbstractWIMojo;
  */
 @Mojo(name = "wiCreateScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
 public class WICreateScanMojo extends AbstractWIMojo {
-
+	@Parameter(defaultValue = "${project}", readonly = true)
+	private MavenProject project;
+	
 	public enum CrawlAuditMode {
 		CrawlOnly, AuditOnly, CrawlAndAudit
 	}
@@ -54,9 +56,6 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	public enum StartOption {
 		Url, Macro;
 	}
-	
-	@Parameter(defaultValue = "${project}", readonly = true)
-	private MavenProject project;
 
 	/**
 	 * ScanName - any alpha-numeric value, does not need to be unique.
@@ -140,33 +139,77 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	@Parameter(property="com.fortify.webinspect.scan.dontStart")
 	private boolean dontStartScan;
 
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		JSONMap result = getWebInspectConnection().api().scanner().createScan(getEntity());
-		logResult(result);
-		// Make the scan id available for other Mojo's that need to access the scan
-		project.getProperties().put("com.fortify.webinspect.scan.id", result.get("ScanId", String.class));
+	public String getScanName() {
+		return scanName;
 	}
 
-	public JSONMap getEntity() {
+	public CrawlAuditMode getCrawlAuditMode() {
+		return crawlAuditMode;
+	}
+
+	public ScanScope getScanScope() {
+		return scanScope;
+	}
+
+	public String[] getScopedPaths() {
+		return scopedPaths;
+	}
+
+	public StartOption getStartOption() {
+		return startOption;
+	}
+
+	public String getLoginMacro() {
+		return loginMacro;
+	}
+
+	public String[] getStartUrls() {
+		return startUrls;
+	}
+
+	public String[] getAllowedHosts() {
+		return allowedHosts;
+	}
+
+	public String[] getWorkflowMacros() {
+		return workflowMacros;
+	}
+
+	public boolean isDontStartScan() {
+		return dontStartScan;
+	}
+
+	protected JSONMap submitWebInspectScan() {
+		return getWebInspectConnection().api().scan().createScan(getEntity());
+	}
+
+	protected JSONMap getEntity() {
 		JSONMap entity = new JSONMap();
 		entity.putPath("settingsName", "Default");
-		entity.putPath("overrides.scanName", scanName);
-		entity.putPath("overrides.crawlAuditMode", crawlAuditMode);
-		entity.putPath("overrides.startOption", startOption);
-		entity.putPath("overrides.startUrls", startUrls);
-		entity.putPath("overrides.workflowMacros", workflowMacros, true);
-		entity.putPath("overrides.allowedHosts", allowedHosts, true);
-		entity.putPath("overrides.scopedPaths", scopedPaths, true);
-		entity.putPath("overrides.dontStartScan", dontStartScan, true);
-		entity.putPath("overrides.loginMacro", loginMacro, true);
+		entity.putPath("overrides.scanName", getScanName());
+		entity.putPath("overrides.crawlAuditMode", getCrawlAuditMode());
+		entity.putPath("overrides.startOption", getStartOption());
+		entity.putPath("overrides.startUrls", getStartUrls());
+		entity.putPath("overrides.workflowMacros", getWorkflowMacros(), true);
+		entity.putPath("overrides.allowedHosts", getAllowedHosts(), true);
+		entity.putPath("overrides.scopedPaths", getScopedPaths(), true);
+		entity.putPath("overrides.dontStartScan", isDontStartScan(), true);
+		entity.putPath("overrides.loginMacro", getLoginMacro(), true);
 		
 
-		if (!CrawlAuditMode.AuditOnly.equals(crawlAuditMode)) {
-			entity.putPath("overrides.scanScope", scanScope);
+		if (!CrawlAuditMode.AuditOnly.equals(getCrawlAuditMode())) {
+			entity.putPath("overrides.scanScope", getScanScope());
 		}
 
 		getLog().info("Create Scan with parameters " + entity);
 		return entity;
+	}
+
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		JSONMap result = submitWebInspectScan();
+		logResult(result);
+		// Make the scan id available for other Mojo's that need to access the scan
+		project.getProperties().put("com.fortify.webinspect.scan.id", result.get("ScanId", String.class));
 	}
 }

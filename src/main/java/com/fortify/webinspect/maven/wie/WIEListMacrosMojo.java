@@ -22,16 +22,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.wie.maven.plugin;
-
-import java.io.File;
+package com.fortify.webinspect.maven.wie;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Mojo for uploading scan settings to WebInspect Enterprise
@@ -39,20 +35,11 @@ import org.apache.maven.project.MavenProject;
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wieUploadScanSettings", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WIEUploadScanSettingsMojo extends AbstractWIEMojo {
-	@Parameter(defaultValue = "${project}", readonly = true)
-	private MavenProject project;
-	
-	@Parameter(property = "com.fortify.wie.scan.settingsFile", required = true)
-	private File scanSettingsFile;
-	
+@Mojo(name = "wieListMacros", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WIEListMacrosMojo extends AbstractWIEMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		String fileId = getWIEConnection().api().scan().uploadScanSettings(scanSettingsFile);
-		logResult(fileId);
-		// Make the file id available for other Mojo's that need to access the settings file
-		project.getProperties().put("com.fortify.wie.scan.settingsFileId", fileId);
+		logResult(getWIEConnection().api().macro().getMacros());
 	}
 
 }
