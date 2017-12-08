@@ -41,10 +41,10 @@ public abstract class AbstractWIMojo extends AbstractMojo {
      * Root URL of the WebInspect scan API instance to be used
      */
     @Parameter(property = "com.fortify.webinspect.connection", required = true)
-    private WebInspectConnectionRetrieverMaven connRetriever;
+    private WebInspectConnectionRetrieverMaven wiConnRetriever;
     
     protected WebInspectAuthenticatingRestConnection getWebInspectConnection() {
-    	return connRetriever.getConnection();
+    	return wiConnRetriever.getConnection();
     }
     
     protected void logResult(Object result) {

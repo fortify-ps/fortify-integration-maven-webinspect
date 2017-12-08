@@ -51,10 +51,10 @@ public class WICreateScanFromWIEMacrosMojo extends WICreateScanMojo {
      * Root URL of the WebInspect Enterprise scan API instance to be used
      */
     @Parameter(property = "com.fortify.wie.connection", required = true)
-    private WIEConnectionRetrieverMaven connRetriever;
+    private WIEConnectionRetrieverMaven wieConnRetriever;
     
     protected WIEAuthenticatingRestConnection getWIEConnection() {
-    	return connRetriever.getConnection();
+    	return wieConnRetriever.getConnection();
     }
 
 	@Override

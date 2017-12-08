@@ -43,7 +43,7 @@
 	<repositories>
 		<repository>
 			<id>FortifyMavenRepo</id>
-			<url>https://raw.githubusercontent.com/rsenden/FortifyMavenRepoTest/master</url>
+			<url>https://raw.githubusercontent.com/rsenden/FortifyMavenRepo/master</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

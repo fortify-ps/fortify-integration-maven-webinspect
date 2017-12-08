@@ -138,6 +138,12 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	 */
 	@Parameter(property="com.fortify.webinspect.scan.dontStart")
 	private boolean dontStartScan;
+	
+	/**
+	 * SettingsName - specify the scan settings to use 
+	 */
+	@Parameter(property="com.fortify.webinspect.scan.settingsName", required=true, defaultValue="Default")
+	private String settingsName;
 
 	public String getScanName() {
 		return scanName;
@@ -178,6 +184,10 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	public boolean isDontStartScan() {
 		return dontStartScan;
 	}
+	
+	public String getSettingsName() {
+		return settingsName;
+	}
 
 	protected JSONMap submitWebInspectScan() {
 		return getWebInspectConnection().api().scan().createScan(getEntity());
@@ -185,7 +195,7 @@ public class WICreateScanMojo extends AbstractWIMojo {
 
 	protected JSONMap getEntity() {
 		JSONMap entity = new JSONMap();
-		entity.putPath("settingsName", "Default");
+		entity.putPath("settingsName", getSettingsName());
 		entity.putPath("overrides.scanName", getScanName());
 		entity.putPath("overrides.crawlAuditMode", getCrawlAuditMode());
 		entity.putPath("overrides.startOption", getStartOption());
