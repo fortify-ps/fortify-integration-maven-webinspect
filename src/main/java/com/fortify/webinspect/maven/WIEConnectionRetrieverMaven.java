@@ -29,7 +29,7 @@ import com.fortify.api.wie.connection.WIEConnectionRetriever;
 public final class WIEConnectionRetrieverMaven extends WIEConnectionRetriever {
 
 	public void set(String uriWithProperties) {
-		getConfig().setUri(uriWithProperties);
+		getConfig().setBaseUrl(uriWithProperties);
 	}
 
 }

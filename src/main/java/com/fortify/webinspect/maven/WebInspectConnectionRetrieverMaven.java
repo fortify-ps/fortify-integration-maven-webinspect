@@ -29,7 +29,7 @@ import com.fortify.api.webinspect.connection.WebInspectConnectionRetriever;
 public final class WebInspectConnectionRetrieverMaven extends WebInspectConnectionRetriever {
 
 	public void set(String uriWithProperties) {
-		getConfig().setUri(uriWithProperties);
+		getConfig().setBaseUrl(uriWithProperties);
 	}
 
 }
