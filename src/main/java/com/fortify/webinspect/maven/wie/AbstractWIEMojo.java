@@ -27,7 +27,7 @@ package com.fortify.webinspect.maven.wie;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.api.wie.connection.WIEAuthenticatingRestConnection;
+import com.fortify.client.wie.connection.WIEAuthenticatingRestConnection;
 import com.fortify.webinspect.maven.WIEConnectionRetrieverMaven;
 
 /**

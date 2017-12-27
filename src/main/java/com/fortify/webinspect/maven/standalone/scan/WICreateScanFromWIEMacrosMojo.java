@@ -32,10 +32,10 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.api.util.rest.json.JSONList;
-import com.fortify.api.util.rest.json.JSONMap;
-import com.fortify.api.webinspect.connection.WebInspectAuthenticatingRestConnection;
-import com.fortify.api.wie.connection.WIEAuthenticatingRestConnection;
+import com.fortify.client.webinspect.connection.WebInspectAuthenticatingRestConnection;
+import com.fortify.client.wie.connection.WIEAuthenticatingRestConnection;
+import com.fortify.util.rest.json.JSONList;
+import com.fortify.util.rest.json.JSONMap;
 import com.fortify.webinspect.maven.WIEConnectionRetrieverMaven;
 import com.google.common.collect.Lists;
 

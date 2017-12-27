@@ -31,7 +31,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import com.fortify.api.util.rest.json.JSONMap;
+import com.fortify.util.rest.json.JSONMap;
 import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
 
 

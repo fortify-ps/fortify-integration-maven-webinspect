@@ -24,7 +24,7 @@
  ******************************************************************************/
 package com.fortify.webinspect.maven;
 
-import com.fortify.api.webinspect.connection.WebInspectConnectionRetriever;
+import com.fortify.client.webinspect.connection.WebInspectConnectionRetriever;
 
 public final class WebInspectConnectionRetrieverMaven extends WebInspectConnectionRetriever {
 

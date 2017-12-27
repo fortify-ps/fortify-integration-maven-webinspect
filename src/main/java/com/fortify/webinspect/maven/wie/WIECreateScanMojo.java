@@ -30,7 +30,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.api.wie.connection.api.WIEScanAPI.ScanData;
+import com.fortify.client.wie.api.WIEScanAPI.ScanData;
 
 /**
  * Mojo for creating a WebInspect Enterprise scan and running it
