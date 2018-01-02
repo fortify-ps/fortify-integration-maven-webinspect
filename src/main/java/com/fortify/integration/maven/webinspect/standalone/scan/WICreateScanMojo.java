@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.standalone.scan;
+package com.fortify.integration.maven.webinspect.standalone.scan;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -31,8 +31,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 import com.fortify.util.rest.json.JSONMap;
-import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
 
 /**
  * Mojo for creating a WebInspect stand-alone scan and optionally running it

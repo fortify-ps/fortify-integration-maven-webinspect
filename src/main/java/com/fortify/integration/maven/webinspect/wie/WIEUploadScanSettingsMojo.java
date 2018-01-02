@@ -22,51 +22,37 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.wie;
+package com.fortify.integration.maven.webinspect.wie;
+
+import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-
-import com.fortify.client.wie.api.WIEScanAPI.ScanData;
+import org.apache.maven.project.MavenProject;
 
 /**
- * Mojo for creating a WebInspect Enterprise scan and running it
+ * Mojo for uploading scan settings to WebInspect Enterprise
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wieCreateScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WIECreateScanMojo extends AbstractWIEMojo {
-	@Parameter(property = "com.fortify.wie.scan.name", required = true)
-	private String scanName;
+@Mojo(name = "wieUploadScanSettings", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WIEUploadScanSettingsMojo extends AbstractWIEMojo {
+	@Parameter(defaultValue = "${project}", readonly = true)
+	private MavenProject project;
 	
-	@Parameter(property = "com.fortify.wie.scan.policyId", required = true)
-	private String policyId;
-	
-	@Parameter(property = "com.fortify.wie.scan.priority", required = true, defaultValue="3")
-	private int priority;
-	
-	@Parameter(property = "com.fortify.wie.scan.siteId", required = true)
-	private String siteId;
-	
-	@Parameter(property = "com.fortify.wie.scan.settingsFileId", required = false, defaultValue = "${com.fortify.wie.scan.settingsFileId}")
-	private String settingsFileId;
-	
-	@Parameter(property = "com.fortify.wie.scan.startUri", required = false)
-	private String startUri;
-	
-	@Parameter(property = "com.fortify.wie.scan.templateId", required = false)
-	private String templateId;
+	@Parameter(property = "com.fortify.wie.scan.settingsFile", required = true)
+	private File scanSettingsFile;
 	
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		ScanData scanData = new ScanData().scanName(scanName).policyId(policyId)
-				.priority(priority).siteId(siteId).settingsFileId(settingsFileId)
-				.startUri(startUri).scanTemplateId(templateId);
-		getWIEConnection().api().scan().createScan(scanData);
+		String fileId = getWIEConnection().api().scan().uploadScanSettings(scanSettingsFile);
+		logResult(fileId);
+		// Make the file id available for other Mojo's that need to access the settings file
+		project.getProperties().put("com.fortify.wie.scan.settingsFileId", fileId);
 	}
 
 }

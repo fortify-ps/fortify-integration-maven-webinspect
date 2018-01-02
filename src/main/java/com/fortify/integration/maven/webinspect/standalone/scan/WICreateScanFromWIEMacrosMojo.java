@@ -22,7 +22,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.standalone.proxy;
+package com.fortify.integration.maven.webinspect.standalone.scan;
+
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -30,39 +32,49 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
+import com.fortify.client.webinspect.connection.WebInspectAuthenticatingRestConnection;
+import com.fortify.client.wie.connection.WIEAuthenticatingRestConnection;
+import com.fortify.integration.maven.webinspect.WIEConnectionRetrieverMaven;
+import com.fortify.util.rest.json.JSONList;
+import com.fortify.util.rest.json.JSONMap;
+import com.google.common.collect.Lists;
 
 /**
- * Mojo for saving WebInspect proxy traffic to the WebInspect host
+ * Mojo for creating a WebInspect stand-alone scan and optionally running it
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiSaveProxyTrafficOnServer", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WISaveProxyTrafficOnServerMojo extends AbstractWIMojo {
-	private String action = "overwrite";
-	
+@Mojo(name = "wiCreateScanFromWIEMacros", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WICreateScanFromWIEMacrosMojo extends WICreateScanMojo {
 	/**
-	 * The instance id of the proxy, as specified or generated when creating the proxy instance,
-	 * for which the traffic needs to be saved. The file name will be based on the proxy
-	 * instance id. Note however that if the instance id contains dots, everything after the
-	 * last dot will be stripped from the file name. For example, an instance id 'a.b.c' will
-	 * be saved as 'a.b.[extension]'.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.instanceId", required = false)
-	protected String instanceId;
-
-	/**
-	 * Extension of savefile, choose between webmacro, tsf or xml.
-	 * Defaults to webmacro.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.traffic.extension", required = true, defaultValue = "webmacro")
-	private String extension;
+     * Root URL of the WebInspect Enterprise scan API instance to be used
+     */
+    @Parameter(property = "com.fortify.wie.connection", required = true)
+    private WIEConnectionRetrieverMaven wieConnRetriever;
+    
+    protected WIEAuthenticatingRestConnection getWIEConnection() {
+    	return wieConnRetriever.getConnection();
+    }
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWebInspectConnection().api().proxy().saveProxyTrafficOnServer(instanceId, extension, action));
+		uploadMacrosFromWIEtoWebInspect();
+		super.execute();
 	}
 
-	
+	private void uploadMacrosFromWIEtoWebInspect() {
+		WIEAuthenticatingRestConnection wie = getWIEConnection();
+		WebInspectAuthenticatingRestConnection wi = getWebInspectConnection();
+		
+		List<String> macroNames = Lists.newArrayList(getWorkflowMacros());
+		macroNames.add(getLoginMacro());
+		
+		JSONList macros = wie.api().macro().queryMacros().names(macroNames.toArray(new String[]{})).build().getAll();
+		for ( JSONMap macro : macros.asValueType(JSONMap.class) ) {
+			byte[] macroData = wie.api().macro().getMacroData(macro.get("id", String.class));
+			wi.api().macro().uploadMacro(macro.get("name", String.class), macroData);
+		}
+		
+	}
 }

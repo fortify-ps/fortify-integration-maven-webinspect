@@ -22,62 +22,47 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.standalone.proxy;
+package com.fortify.integration.maven.webinspect.standalone.proxy;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
-import com.fortify.util.rest.json.JSONMap;
-import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
-
+import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
- * Mojo for creating a WebInspect proxy. Proxy properties like instance id,
- * port and address will be saved as project properties for later use by other mojo's.
+ * Mojo for saving WebInspect proxy traffic to the WebInspect host
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiCreateProxy", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WICreateProxyMojo extends AbstractWIMojo {
-	@Parameter(defaultValue = "${project}", readonly = true)
-	private MavenProject project;
+@Mojo(name = "wiSaveProxyTrafficOnServer", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WISaveProxyTrafficOnServerMojo extends AbstractWIMojo {
+	private String action = "overwrite";
 	
 	/**
-	 * Represents the unique name of this proxy instance.
-	 * If not specified, WebInspect will automatically generate an
-	 * instance id when creating a new proxy instance. This
-	 * generated proxy instance id then needs to be specified
-	 * for the other proxy-related goals.
+	 * The instance id of the proxy, as specified or generated when creating the proxy instance,
+	 * for which the traffic needs to be saved. The file name will be based on the proxy
+	 * instance id. Note however that if the instance id contains dots, everything after the
+	 * last dot will be stripped from the file name. For example, an instance id 'a.b.c' will
+	 * be saved as 'a.b.[extension]'.
 	 */
 	@Parameter(property = "com.fortify.webinspect.proxy.instanceId", required = false)
 	protected String instanceId;
-	
-	/**
-	 * Port to listen on by the proxy server. If not specified, WebInspect
-	 * will use a random unused port.
-	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.port", required = false)
-	private int proxyPort;
 
 	/**
-	 * Hostname or ip address where the proxy should bind on. If not specified,
-	 * the WebInspect proxy will bind on the default network interface address
-	 * (127.0.0.1).
+	 * Extension of savefile, choose between webmacro, tsf or xml.
+	 * Defaults to webmacro.
 	 */
-	@Parameter(property = "com.fortify.webinspect.proxy.address", required = false)
-	protected String proxyAddress;
+	@Parameter(property = "com.fortify.webinspect.proxy.traffic.extension", required = true, defaultValue = "webmacro")
+	private String extension;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		JSONMap result = getWebInspectConnection().api().proxy().createProxy(instanceId, proxyAddress, proxyPort);
-		logResult(result);
-		project.getProperties().put("com.fortify.webinspect.proxy.instanceId", result.get("instanceId"));
-		project.getProperties().put("com.fortify.webinspect.proxy.port", result.get("port"));
-		project.getProperties().put("com.fortify.webinspect.proxy.address", result.get("address"));
+		logResult(getWebInspectConnection().api().proxy().saveProxyTrafficOnServer(instanceId, extension, action));
 	}
+
+	
 }

@@ -22,11 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.standalone.scan;
-
-import java.nio.file.CopyOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+package com.fortify.integration.maven.webinspect.wie;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,36 +30,43 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
+import com.fortify.client.wie.api.WIEScanAPI.ScanData;
 
 /**
- * Mojo for saving a WebInspect scan to local disk
+ * Mojo for creating a WebInspect Enterprise scan and running it
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiSaveScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WISaveScanMojo extends AbstractWIMojo {
-
-	// We specify default value as discussed here: https://stackoverflow.com/questions/4061386/maven-how-to-pass-parameters-between-mojos
-	@Parameter(property = "com.fortify.webinspect.scan.id", required = true, defaultValue="${com.fortify.webinspect.scan.id}")
-	private String scanId;
-	@Parameter(property = "com.fortify.webinspect.scan.extension", required = true, defaultValue = "settings")
-	private String extension;
-	@Parameter(property = "com.fortify.webinspect.scan.detailType", required = false)
-	private String detailType;
-	@Parameter(property = "com.fortify.webinspect.scan.outputFile", required = true)
-	private String outputFile;
-	@Parameter(property = "com.fortify.webinspect.scan.replaceExistingOutputFile", required = false, defaultValue = "true")
-	private boolean replaceExistingOutputFile;
+@Mojo(name = "wieCreateScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WIECreateScanMojo extends AbstractWIEMojo {
+	@Parameter(property = "com.fortify.wie.scan.name", required = true)
+	private String scanName;
 	
-
+	@Parameter(property = "com.fortify.wie.scan.policyId", required = true)
+	private String policyId;
+	
+	@Parameter(property = "com.fortify.wie.scan.priority", required = true, defaultValue="3")
+	private int priority;
+	
+	@Parameter(property = "com.fortify.wie.scan.siteId", required = true)
+	private String siteId;
+	
+	@Parameter(property = "com.fortify.wie.scan.settingsFileId", required = false, defaultValue = "${com.fortify.wie.scan.settingsFileId}")
+	private String settingsFileId;
+	
+	@Parameter(property = "com.fortify.wie.scan.startUri", required = false)
+	private String startUri;
+	
+	@Parameter(property = "com.fortify.wie.scan.templateId", required = false)
+	private String templateId;
+	
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		CopyOption[] copyOptions = new CopyOption[]{};
-		if ( replaceExistingOutputFile ) {
-			copyOptions = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
-		}
-		getWebInspectConnection().api().scan().saveScan(scanId, extension, detailType, Paths.get(outputFile), copyOptions);
+		ScanData scanData = new ScanData().scanName(scanName).policyId(policyId)
+				.priority(priority).siteId(siteId).settingsFileId(settingsFileId)
+				.startUri(startUri).scanTemplateId(templateId);
+		getWIEConnection().api().scan().createScan(scanData);
 	}
+
 }

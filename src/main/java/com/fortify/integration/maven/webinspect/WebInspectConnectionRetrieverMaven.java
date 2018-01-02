@@ -22,24 +22,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.wie;
+package com.fortify.integration.maven.webinspect;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
+import com.fortify.client.webinspect.connection.WebInspectConnectionRetriever;
 
-/**
- * Mojo for uploading scan settings to WebInspect Enterprise
- * 
- * @author Ruud Senden
- *
- */
-@Mojo(name = "wieListMacros", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WIEListMacrosMojo extends AbstractWIEMojo {
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWIEConnection().api().macro().queryMacros().build().getAll());
+public final class WebInspectConnectionRetrieverMaven extends WebInspectConnectionRetriever {
+
+	public void set(String uriWithProperties) {
+		getConfig().setBaseUrl(uriWithProperties);
 	}
 
 }

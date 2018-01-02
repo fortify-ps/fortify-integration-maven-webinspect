@@ -22,14 +22,32 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven;
+package com.fortify.integration.maven.webinspect.wie;
 
-import com.fortify.client.webinspect.connection.WebInspectConnectionRetriever;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
-public final class WebInspectConnectionRetrieverMaven extends WebInspectConnectionRetriever {
+import com.fortify.client.wie.connection.WIEAuthenticatingRestConnection;
+import com.fortify.integration.maven.webinspect.WIEConnectionRetrieverMaven;
 
-	public void set(String uriWithProperties) {
-		getConfig().setBaseUrl(uriWithProperties);
+/**
+ * Abstract mojo superclass for functionality related to WebInspect Enterprise 
+ *
+ * @author ruud.senden@hpe.com
+ *
+ */
+public abstract class AbstractWIEMojo extends AbstractMojo {
+    /**
+     * Root URL of the WebInspect Enterprise scan API instance to be used
+     */
+    @Parameter(property = "com.fortify.wie.connection", required = true)
+    private WIEConnectionRetrieverMaven connRetriever;
+    
+    protected WIEAuthenticatingRestConnection getWIEConnection() {
+    	return connRetriever.getConnection();
+    }
+    
+    protected void logResult(Object result) {
+		getLog().info("Result: "+(result==null?"No Contents":result.toString()));
 	}
-
 }

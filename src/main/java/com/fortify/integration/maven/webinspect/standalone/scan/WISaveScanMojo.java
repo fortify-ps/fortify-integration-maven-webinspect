@@ -22,26 +22,48 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.standalone.macro;
+package com.fortify.integration.maven.webinspect.standalone.scan;
+
+import java.nio.file.CopyOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.webinspect.maven.standalone.AbstractWIMojo;
+import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
- * Mojo for uploading scan settings to WebInspect Enterprise
+ * Mojo for saving a WebInspect scan to local disk
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wiListMacros", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WIListMacrosMojo extends AbstractWIMojo {
+@Mojo(name = "wiSaveScan", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WISaveScanMojo extends AbstractWIMojo {
+
+	// We specify default value as discussed here: https://stackoverflow.com/questions/4061386/maven-how-to-pass-parameters-between-mojos
+	@Parameter(property = "com.fortify.webinspect.scan.id", required = true, defaultValue="${com.fortify.webinspect.scan.id}")
+	private String scanId;
+	@Parameter(property = "com.fortify.webinspect.scan.extension", required = true, defaultValue = "settings")
+	private String extension;
+	@Parameter(property = "com.fortify.webinspect.scan.detailType", required = false)
+	private String detailType;
+	@Parameter(property = "com.fortify.webinspect.scan.outputFile", required = true)
+	private String outputFile;
+	@Parameter(property = "com.fortify.webinspect.scan.replaceExistingOutputFile", required = false, defaultValue = "true")
+	private boolean replaceExistingOutputFile;
+	
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWebInspectConnection().api().macro().getMacros());
+		CopyOption[] copyOptions = new CopyOption[]{};
+		if ( replaceExistingOutputFile ) {
+			copyOptions = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
+		}
+		getWebInspectConnection().api().scan().saveScan(scanId, extension, detailType, Paths.get(outputFile), copyOptions);
 	}
-
 }

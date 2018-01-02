@@ -22,37 +22,33 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.wie;
-
-import java.io.File;
+package com.fortify.integration.maven.webinspect.standalone.proxy;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+
+import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
- * Mojo for uploading scan settings to WebInspect Enterprise
+ * Mojo for deleting a WebInspect proxy
  * 
  * @author Ruud Senden
  *
  */
-@Mojo(name = "wieUploadScanSettings", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
-public class WIEUploadScanSettingsMojo extends AbstractWIEMojo {
-	@Parameter(defaultValue = "${project}", readonly = true)
-	private MavenProject project;
+@Mojo(name = "wiDeleteProxy", defaultPhase = LifecyclePhase.NONE, requiresProject = false)
+public class WIDeleteProxyMojo extends AbstractWIMojo {
+	/**
+	 * The instance id of the proxy to be deleted, as specified or generated when
+	 * creating the proxy instance.
+	 */
+	@Parameter(property = "com.fortify.webinspect.proxy.instanceId", required = false)
+	protected String instanceId;
 	
-	@Parameter(property = "com.fortify.wie.scan.settingsFile", required = true)
-	private File scanSettingsFile;
-	
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		String fileId = getWIEConnection().api().scan().uploadScanSettings(scanSettingsFile);
-		logResult(fileId);
-		// Make the file id available for other Mojo's that need to access the settings file
-		project.getProperties().put("com.fortify.wie.scan.settingsFileId", fileId);
-	}
-
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+    	logResult(getWebInspectConnection().api().proxy().deleteProxy(instanceId));
+    }
 }

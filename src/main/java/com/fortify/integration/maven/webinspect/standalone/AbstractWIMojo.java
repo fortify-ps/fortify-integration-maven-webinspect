@@ -22,29 +22,29 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.webinspect.maven.wie;
+package com.fortify.integration.maven.webinspect.standalone;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.fortify.client.wie.connection.WIEAuthenticatingRestConnection;
-import com.fortify.webinspect.maven.WIEConnectionRetrieverMaven;
+import com.fortify.client.webinspect.connection.WebInspectAuthenticatingRestConnection;
+import com.fortify.integration.maven.webinspect.WebInspectConnectionRetrieverMaven;
 
 /**
- * Abstract mojo superclass for functionality related to WebInspect Enterprise 
+ * Abstract mojo superclass for functionality related to WebInspect stand-alone 
  *
  * @author ruud.senden@hpe.com
  *
  */
-public abstract class AbstractWIEMojo extends AbstractMojo {
+public abstract class AbstractWIMojo extends AbstractMojo {
     /**
-     * Root URL of the WebInspect Enterprise scan API instance to be used
+     * Root URL of the WebInspect scan API instance to be used
      */
-    @Parameter(property = "com.fortify.wie.connection", required = true)
-    private WIEConnectionRetrieverMaven connRetriever;
+    @Parameter(property = "com.fortify.webinspect.connection", required = true)
+    private WebInspectConnectionRetrieverMaven wiConnRetriever;
     
-    protected WIEAuthenticatingRestConnection getWIEConnection() {
-    	return connRetriever.getConnection();
+    protected WebInspectAuthenticatingRestConnection getWebInspectConnection() {
+    	return wiConnRetriever.getConnection();
     }
     
     protected void logResult(Object result) {
