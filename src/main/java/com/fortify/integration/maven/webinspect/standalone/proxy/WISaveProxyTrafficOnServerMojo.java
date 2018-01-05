@@ -30,6 +30,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.fortify.client.webinspect.api.WebInspectProxyAPI;
 import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
@@ -61,7 +62,7 @@ public class WISaveProxyTrafficOnServerMojo extends AbstractWIMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWebInspectConnection().api().proxy().saveProxyTrafficOnServer(instanceId, extension, action));
+		logResult(getWebInspectConnection().api(WebInspectProxyAPI.class).saveProxyTrafficOnServer(instanceId, extension, action));
 	}
 
 	

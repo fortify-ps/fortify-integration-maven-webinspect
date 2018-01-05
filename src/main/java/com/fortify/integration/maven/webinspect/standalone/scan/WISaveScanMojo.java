@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.fortify.client.webinspect.api.WebInspectScanAPI;
 import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
@@ -64,6 +65,6 @@ public class WISaveScanMojo extends AbstractWIMojo {
 		if ( replaceExistingOutputFile ) {
 			copyOptions = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
 		}
-		getWebInspectConnection().api().scan().saveScan(scanId, extension, detailType, Paths.get(outputFile), copyOptions);
+		getWebInspectConnection().api(WebInspectScanAPI.class).saveScan(scanId, extension, detailType, Paths.get(outputFile), copyOptions);
 	}
 }

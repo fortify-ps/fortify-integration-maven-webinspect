@@ -33,6 +33,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import com.fortify.client.wie.api.WIEScanAPI;
+
 /**
  * Mojo for uploading scan settings to WebInspect Enterprise
  * 
@@ -49,7 +51,7 @@ public class WIEUploadScanSettingsMojo extends AbstractWIEMojo {
 	
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		String fileId = getWIEConnection().api().scan().uploadScanSettings(scanSettingsFile);
+		String fileId = getWIEConnection().api(WIEScanAPI.class).uploadScanSettings(scanSettingsFile);
 		logResult(fileId);
 		// Make the file id available for other Mojo's that need to access the settings file
 		project.getProperties().put("com.fortify.wie.scan.settingsFileId", fileId);

@@ -30,6 +30,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.fortify.client.wie.api.WIEScanAPI;
 import com.fortify.client.wie.api.WIEScanAPI.ScanData;
 
 /**
@@ -66,7 +67,7 @@ public class WIECreateScanMojo extends AbstractWIEMojo {
 		ScanData scanData = new ScanData().scanName(scanName).policyId(policyId)
 				.priority(priority).siteId(siteId).settingsFileId(settingsFileId)
 				.startUri(startUri).scanTemplateId(templateId);
-		getWIEConnection().api().scan().createScan(scanData);
+		getWIEConnection().api(WIEScanAPI.class).createScan(scanData);
 	}
 
 }

@@ -32,7 +32,9 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.fortify.client.webinspect.api.WebInspectMacroAPI;
 import com.fortify.client.webinspect.connection.WebInspectAuthenticatingRestConnection;
+import com.fortify.client.wie.api.WIEMacroAPI;
 import com.fortify.client.wie.connection.WIEAuthenticatingRestConnection;
 import com.fortify.integration.maven.webinspect.WIEConnectionRetrieverMaven;
 import com.fortify.util.rest.json.JSONList;
@@ -70,10 +72,10 @@ public class WICreateScanFromWIEMacrosMojo extends WICreateScanMojo {
 		List<String> macroNames = Lists.newArrayList(getWorkflowMacros());
 		macroNames.add(getLoginMacro());
 		
-		JSONList macros = wie.api().macro().queryMacros().names(macroNames.toArray(new String[]{})).build().getAll();
+		JSONList macros = wie.api(WIEMacroAPI.class).queryMacros().names(macroNames.toArray(new String[]{})).build().getAll();
 		for ( JSONMap macro : macros.asValueType(JSONMap.class) ) {
-			byte[] macroData = wie.api().macro().getMacroData(macro.get("id", String.class));
-			wi.api().macro().uploadMacro(macro.get("name", String.class), macroData);
+			byte[] macroData = wie.api(WIEMacroAPI.class).getMacroData(macro.get("id", String.class));
+			wi.api(WebInspectMacroAPI.class).uploadMacro(macro.get("name", String.class), macroData);
 		}
 		
 	}

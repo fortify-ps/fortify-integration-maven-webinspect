@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.fortify.client.webinspect.api.WebInspectProxyAPI;
 import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
@@ -71,6 +72,6 @@ public class WISaveProxyTraffic extends AbstractWIMojo {
 		if ( replaceExistingOutputFile ) {
 			copyOptions = new CopyOption[]{StandardCopyOption.REPLACE_EXISTING};
 		}
-		getWebInspectConnection().api().proxy().saveProxyTraffic(instanceId, extension, Paths.get(outputFile), copyOptions);
+		getWebInspectConnection().api(WebInspectProxyAPI.class).saveProxyTraffic(instanceId, extension, Paths.get(outputFile), copyOptions);
 	}
 }

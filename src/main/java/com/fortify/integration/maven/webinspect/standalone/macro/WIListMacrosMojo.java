@@ -29,6 +29,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
+import com.fortify.client.webinspect.api.WebInspectMacroAPI;
 import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 
 /**
@@ -41,7 +42,7 @@ import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 public class WIListMacrosMojo extends AbstractWIMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWebInspectConnection().api().macro().getMacros());
+		logResult(getWebInspectConnection().api(WebInspectMacroAPI.class).getMacros());
 	}
 
 }

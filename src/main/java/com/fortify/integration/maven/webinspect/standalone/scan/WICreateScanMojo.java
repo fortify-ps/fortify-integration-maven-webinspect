@@ -31,6 +31,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import com.fortify.client.webinspect.api.WebInspectScanAPI;
 import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 import com.fortify.util.rest.json.JSONMap;
 
@@ -190,7 +191,7 @@ public class WICreateScanMojo extends AbstractWIMojo {
 	}
 
 	protected JSONMap submitWebInspectScan() {
-		return getWebInspectConnection().api().scan().createScan(getEntity());
+		return getWebInspectConnection().api(WebInspectScanAPI.class).createScan(getEntity());
 	}
 
 	protected JSONMap getEntity() {

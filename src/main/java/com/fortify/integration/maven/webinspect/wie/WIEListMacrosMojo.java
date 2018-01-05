@@ -29,6 +29,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
+import com.fortify.client.wie.api.WIEMacroAPI;
+
 /**
  * Mojo for uploading scan settings to WebInspect Enterprise
  * 
@@ -39,7 +41,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 public class WIEListMacrosMojo extends AbstractWIEMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		logResult(getWIEConnection().api().macro().queryMacros().build().getAll());
+		logResult(getWIEConnection().api(WIEMacroAPI.class).queryMacros().build().getAll());
 	}
 
 }

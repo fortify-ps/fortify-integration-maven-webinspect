@@ -31,6 +31,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import com.fortify.client.webinspect.api.WebInspectProxyAPI;
 import com.fortify.integration.maven.webinspect.standalone.AbstractWIMojo;
 import com.fortify.util.rest.json.JSONMap;
 
@@ -74,7 +75,7 @@ public class WICreateProxyMojo extends AbstractWIMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		JSONMap result = getWebInspectConnection().api().proxy().createProxy(instanceId, proxyAddress, proxyPort);
+		JSONMap result = getWebInspectConnection().api(WebInspectProxyAPI.class).createProxy(instanceId, proxyAddress, proxyPort);
 		logResult(result);
 		project.getProperties().put("com.fortify.webinspect.proxy.instanceId", result.get("instanceId"));
 		project.getProperties().put("com.fortify.webinspect.proxy.port", result.get("port"));
