@@ -48,7 +48,7 @@
 	</developers>
 	<scm>
 		<developerConnection>scm:git:https://github.com/rsenden/fortify-integration-maven-webinspect</developerConnection>
-		<tag>HEAD</tag>
+		<tag>master</tag>
 	</scm>
 	<inceptionYear>2017</inceptionYear>
 	<name>WebInspect Maven Plugin</name>
