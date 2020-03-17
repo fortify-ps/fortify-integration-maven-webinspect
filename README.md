@@ -74,3 +74,7 @@ TODO
 
 ## Creating WebInspect Enterprise scan
 TODO
+# Licensing
+
+See [LICENSE.TXT](LICENSE.TXT)
+
